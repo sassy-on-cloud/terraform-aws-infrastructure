@@ -1,8 +1,14 @@
 # Terraform AWS Infrastructure
 
-Infrastructure as Code (IaC) project demonstrating how to provision and manage AWS infrastructure using **Terraform**.
+Infrastructure as Code (IaC) project demonstrating how to provision, verify, and manage AWS infrastructure using **Terraform**.
 
 This project builds a reproducible AWS environment consisting of a custom VPC, public subnet, Internet Gateway, route table, security group, and Ubuntu EC2 instance.
+
+The project demonstrates the complete Terraform lifecycle:
+
+**Plan → Provision → Verify → Access → Destroy**
+
+---
 
 ## 🎯 Project Goal
 
@@ -13,6 +19,7 @@ Instead of creating AWS resources manually through the AWS Console, the infrastr
 * Planned before deployment
 * Provisioned consistently
 * Verified through Terraform state
+* Accessed through SSH
 * Modified through configuration
 * Destroyed when no longer required
 
@@ -92,6 +99,9 @@ Basic security controls are included in the infrastructure:
 * Terraform state files are excluded from Git.
 * Environment-specific `.tfvars` files are excluded from Git.
 * No NAT Gateway is used in this learning environment to avoid unnecessary infrastructure costs.
+* Public screenshots were reviewed and redacted to remove unnecessary AWS identifiers and IP information.
+
+The project demonstrates **least-privilege IAM concepts** by using a dedicated Terraform IAM identity rather than unrestricted administrative credentials.
 
 ---
 
@@ -133,7 +143,9 @@ terraform-aws-infrastructure/
     ├── 14-terraform-ec2-created.png
     ├── 15-terraform-infrastructure-verified.png
     ├── 16-terraform-outputs.png
-    └── 17-terraform-ec2-ssh.png
+    ├── 17-terraform-ec2-ssh.png
+    ├── 18-terraform-destroy-complete.png
+    └── 19-terraform-state-empty.png
 ```
 
 ---
@@ -189,10 +201,11 @@ Creates or updates the infrastructure according to the Terraform configuration.
 ```bash
 terraform state list
 terraform output
-terraform plan
 ```
 
-These commands are used to inspect managed resources, view outputs, and confirm that the deployed infrastructure matches the configuration.
+These commands are used to inspect managed resources and view infrastructure outputs.
+
+The deployed EC2 instance was also verified through SSH.
 
 ### 6. Destroy
 
@@ -202,16 +215,67 @@ terraform destroy
 
 Removes the Terraform-managed infrastructure when it is no longer required.
 
+The project was successfully destroyed after verification:
+
+```text
+Destroy complete! Resources: 7 destroyed.
+```
+
+A subsequent `terraform state list` returned no managed resources, demonstrating that the Terraform state was cleared after destruction.
+
+---
+
+## 🔄 Infrastructure Lifecycle
+
+The completed project demonstrates the following lifecycle:
+
+```text
+Terraform Configuration
+        |
+        v
+terraform plan
+        |
+        v
+terraform apply
+        |
+        v
+AWS Infrastructure
+        |
+        +---- VPC
+        +---- Public Subnet
+        +---- Internet Gateway
+        +---- Route Table
+        +---- Security Group
+        +---- EC2
+        |
+        v
+Infrastructure Verification
+        |
+        v
+EC2 SSH Verification
+        |
+        v
+terraform destroy
+        |
+        v
+AWS Infrastructure Removed
+        |
+        v
+Terraform State Empty
+```
+
+This demonstrates that the infrastructure can be created and removed from code rather than manually managing each AWS resource through the console.
+
 ---
 
 ## 📸 Project Documentation
 
-The project includes screenshots documenting the infrastructure lifecycle:
+The project includes screenshots documenting the complete infrastructure lifecycle:
 
 | Stage                        | Screenshot                                 |
 | ---------------------------- | ------------------------------------------ |
 | Project structure            | `01-project-structure.png`                 |
-| Terraform IAM policy         | `02-terraform-iam-policy-json.png`              |
+| Terraform IAM policy         | `02-terraform-iam-policy-json.png`         |
 | AWS authentication           | `03-terraform-aws-authentication.png`      |
 | VPC planning                 | `04-terraform-vpc-plan.png`                |
 | VPC creation                 | `05-terraform-vpc-created.png`             |
@@ -227,8 +291,10 @@ The project includes screenshots documenting the infrastructure lifecycle:
 | Infrastructure verification  | `15-terraform-infrastructure-verified.png` |
 | Terraform outputs            | `16-terraform-outputs.png`                 |
 | EC2 SSH verification         | `17-terraform-ec2-ssh.png`                 |
+| Terraform destroy            | `18-terraform-destroy-complete.png`        |
+| Empty Terraform state        | `19-terraform-state-empty.png`             |
 
-These screenshots document the progression from Terraform configuration to a working AWS environment.
+The screenshots provide evidence of the progression from Terraform configuration to AWS infrastructure provisioning, verification, and final teardown.
 
 ---
 
@@ -253,7 +319,10 @@ Through this project, I practiced:
 * EC2 provisioning
 * SSH access
 * IAM least-privilege concepts
-* Terraform planning and lifecycle management
+* Terraform planning
+* Infrastructure verification
+* Terraform resource lifecycle management
+* Infrastructure teardown
 
 ---
 
@@ -288,13 +357,13 @@ Kubernetes Capstone
 
 Each project builds on the previous one.
 
-**Project 4 focuses specifically on Infrastructure as Code and reproducible AWS infrastructure.**
+**Project 4 focuses specifically on Infrastructure as Code, reproducibility, AWS networking, IAM, and infrastructure lifecycle management.**
 
 ---
 
 ## 🚧 Project Status
 
-**Core Terraform infrastructure provisioned and verified.**
+**Completed — Terraform AWS infrastructure provisioned, verified, accessed, and destroyed successfully.**
 
 Implemented:
 
@@ -309,8 +378,9 @@ Implemented:
 * Terraform outputs
 * EC2 SSH verification
 * Architecture documentation
-
-Final lifecycle verification will include Terraform resource destruction after documentation is complete.
+* Terraform infrastructure destruction
+* Final empty-state verification
+* Public-safe project screenshots
 
 ---
 
@@ -320,13 +390,15 @@ This project is designed as a learning environment.
 
 The infrastructure intentionally avoids resources such as NAT Gateways that can introduce unnecessary costs for a small learning project.
 
-The EC2 instance and associated public IPv4 usage may incur charges depending on the AWS account's pricing and free-tier eligibility.
+The EC2 instance and associated AWS resources may incur charges depending on the AWS account's pricing and free-tier eligibility.
 
 Resources should be destroyed when they are no longer required:
 
 ```bash
 terraform destroy
 ```
+
+The infrastructure created for this project was destroyed after verification.
 
 ---
 
@@ -337,4 +409,3 @@ terraform destroy
 Aspiring Cloud & DevOps Engineer
 
 Cloud Computing • AWS • Linux • DevOps • Cloud Security
-
